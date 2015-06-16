@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 """Library imports"""
+import types
 import json
 from bson import json_util
 
@@ -157,7 +158,8 @@ class Query:
                     key = 'spec'
                 if key == 'orderby':
                     key = 'sort'
-                    value = list(value.items())
+                    if type(value) != types.ListType :
+                        value = list(value.items())
                 if key == 'explain':
                     self.__explain = True
 
