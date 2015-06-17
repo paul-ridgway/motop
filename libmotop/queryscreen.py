@@ -92,7 +92,10 @@ class ReplicationInfoBlock(ServerBasedBlock):
         lines = []
 
         for server in self.connectedServers():
-            replicationInfo = server.replicationInfo()
+            try :
+                replicationInfo = server.replicationInfo()
+            except :
+                replicationInfo = None
             if replicationInfo:
                 cells = []
                 cells.append(server)
