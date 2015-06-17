@@ -116,11 +116,6 @@ class Server:
                     if op.get('op') and op.get('ns') in ('', 'local.sources'):
                         """Condition to find replication operation on the slave."""
                         continue
-                # exclude 'none' operation which is actually replication writer
-                if op.get('op') == "none" and op.get('desc').startswith('repl writer'):
-                    """Condition to find replication operation on the slave."""
-                    continue
-
                 yield Result(op)
 
     def explainQuery(self, namespace, findParameters):
