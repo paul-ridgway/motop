@@ -112,6 +112,16 @@ Example configuration::
     username=foo
     password=bar
 
+    [DEFAULT]
+    # common configuration
+    username=foo
+    password=bar
+    namespace=mydb
+    status=on
+    replicationInfo=on
+    operations=on
+    replicationOperations=on
+
 
 License
 -------
