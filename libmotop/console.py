@@ -147,8 +147,8 @@ class Block:
             """Extents int to show big numbers human readable."""
             for fix in ('',) + self.fixes:
                 if value < 10000:
-                    return str(int(value)) + fix
-                value = round(value / 1000)
+                    return '%.02f' % (value) + fix
+                value = float(value) / 1000
 
         if value is not None:
             return str(value)
