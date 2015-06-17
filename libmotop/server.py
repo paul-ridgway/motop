@@ -27,6 +27,7 @@ class Server:
         self.__address = address
         self.__username = kwargs.get("username", None)
         self.__password = kwargs.get("password", None)
+        self.__namespace = kwargs.get("namespace", "admin")
         self.tryToConnect()
 
     connectionClass = pymongo.MongoClient if pymongo.version_tuple >= (2, 4) else pymongo.Connection
@@ -40,7 +41,7 @@ class Server:
             self.__lastError = error
 
         if self.__username and self.__password:
-            self.__connection.admin.authenticate(self.__username, self.__password)
+            self.__connection[self.__namespace].authenticate(self.__username, self.__password)
 
     def __str__(self):
         return self.__name
@@ -82,7 +83,7 @@ class Server:
 
     def status(self):
         if self.connected():
-            result = self.__execute(self.__connection.admin.command, 'serverStatus')
+            result = self.__execute(self.__connection[self.__namespace].command, 'serverStatus')
 
             if result:
                 return Result(result)
@@ -95,7 +96,7 @@ class Server:
     def replicaSetMembers(self):
         """Execute replSetGetStatus operation on the server. Filter arbiters. Calculate the lag. Add relation to the
         member which is the server itself. Return the replica set."""
-        replicaSetStatus = self.__execute(self.__connection.admin.command, 'replSetGetStatus')
+        replicaSetStatus = self.__execute(self.__connection[self.__namespace].command, 'replSetGetStatus')
         if replicaSetStatus:
             for member in replicaSetStatus['members']:
                 if member.get('statusStr') not in ['ARBITER']:
@@ -106,7 +107,7 @@ class Server:
 
     def currentOperations(self, hideReplicationOperations=False):
         """Execute currentOp operation on the server. Filter and yield returning operations."""
-        operations = self.__execute(self.__connection.admin.current_op)
+        operations = self.__execute(self.__connection[self.__namespace].current_op)
         if operations:
             for op in operations['inprog']:
                 if hideReplicationOperations:
