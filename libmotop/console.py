@@ -143,7 +143,14 @@ class Block:
         if isinstance(value, list):
             return ' / '.join(self.__cell(v) for v in value)
 
-        if isinstance(value, numbers.Number):
+        if isinstance(value, numbers.Integral):
+            """Extents int to show big numbers human readable."""
+            for fix in ('',) + self.fixes:
+                if value < 10000:
+                    return '%.0f' % (value) + fix
+                value = float(value) / 1000
+
+        elif isinstance(value, numbers.Number):
             """Extents int to show big numbers human readable."""
             for fix in ('',) + self.fixes:
                 if value < 10000:
