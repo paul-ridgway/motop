@@ -148,7 +148,7 @@ class Block:
             for fix in ('',) + self.fixes:
                 if value < 10000:
                     return '%.0f' % (value) + fix
-                value = float(value) / 1000
+                value = value / 1000
 
         elif isinstance(value, numbers.Number):
             """Extents int to show big numbers human readable."""

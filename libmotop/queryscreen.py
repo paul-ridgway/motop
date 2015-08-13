@@ -37,7 +37,7 @@ class StatusBlock(Block):
     def reset(self):
         lines = []
 
-        sum_cells = ["sum", 0, 0, 0, 0, 0, 0, 0, 0]
+        sum_cells = ["SUM", 0, 0, 0, 0.0, [0, 0], [0, 0], [0, 0], 0.0]
 
         for server in self.__servers:
             cells = []
@@ -64,11 +64,27 @@ class StatusBlock(Block):
                 sum_cells[3] += current_queue
                 cells.append(current_queue)
 
-                cells.append(status.deepgetDiff(oldStatus, 'backgroundFlushing', 'flushes') / sec)
-                cells.append([connectionsCurrent, connectionsCurrent + connectionsAvailable])
-                cells.append(status.deepget('network', ('bytesIn', 'bytesOut')))
-                cells.append([v * 10**6 for v in status.deepget('mem', ('resident', 'mapped')) if v is not None])
-                cells.append(status.deepgetDiff(oldStatus, 'extra_info', 'page_faults') / sec)
+                flush = status.deepgetDiff(oldStatus, 'backgroundFlushing', 'flushes') / sec
+                sum_cells[4] += flush
+                cells.append(flush)
+
+                sum_cells[5][0] += int(connectionsCurrent)
+                sum_cells[5][1] += int(connectionsCurrent + connectionsAvailable)
+                cells.append([connectionsCurrent, int(connectionsCurrent + connectionsAvailable)])
+
+                network = status.deepget('network', ('bytesIn', 'bytesOut'))
+                sum_cells[6][0] += network[0]
+                sum_cells[6][1] += network[1]
+                cells.append(network)
+
+                memory = [v * 10**6 for v in status.deepget('mem', ('resident', 'mapped')) if v is not None]
+                sum_cells[7][0] += memory[0]
+                sum_cells[7][1] += memory[1]
+                cells.append(memory)
+
+                page_faults = status.deepgetDiff(oldStatus, 'extra_info', 'page_faults') / sec
+                sum_cells[8] += page_faults
+                cells.append(page_faults)
 
                 self.__oldStatus[server] = status
             else:
