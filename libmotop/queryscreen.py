@@ -76,6 +76,8 @@ class StatusBlock(Block):
 
             lines.append(cells)
 
+        lines.append(sum_cells)
+
         Block.reset(self, lines)
 
 class ServerBasedBlock(Block):
