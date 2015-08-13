@@ -37,6 +37,8 @@ class StatusBlock(Block):
     def reset(self):
         lines = []
 
+        sum_cells = ["sum", 0, 0, 0, 0, 0, 0, 0, 0]
+
         for server in self.__servers:
             cells = []
             cells.append(server)
@@ -51,9 +53,17 @@ class StatusBlock(Block):
                 connectionsCurrent = status.deepget('connections', 'current') or 0
                 connectionsAvailable = status.deepget('connections', 'available') or 0
 
+                sum_cells[1] += (operations / sec)
                 cells.append(operations / sec)
-                cells.append(status.deepget('globalLock', 'activeClients', 'total'))
-                cells.append(status.deepget('globalLock', 'currentQueue', 'total'))
+
+                active_conn = int(status.deepget('globalLock', 'activeClients', 'total'))
+                cells.append(active_conn)
+                sum_cells[2] += active_conn
+
+                current_queue = int(status.deepget('globalLock', 'currentQueue', 'total'))
+                sum_cells[3] += current_queue
+                cells.append(current_queue)
+
                 cells.append(status.deepgetDiff(oldStatus, 'backgroundFlushing', 'flushes') / sec)
                 cells.append([connectionsCurrent, connectionsCurrent + connectionsAvailable])
                 cells.append(status.deepget('network', ('bytesIn', 'bytesOut')))
