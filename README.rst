@@ -14,7 +14,7 @@ Install with easy_install::
 
 Install with pip::
 
-    pip install git+https://github.com/tart/motop.git
+    pip install git+https://github.com/paul-ridgway/motop.git
 
 Download and install::
 
