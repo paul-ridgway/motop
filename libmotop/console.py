@@ -17,6 +17,9 @@
 
 """Imports for Python 3 compatibility"""
 from __future__ import print_function
+
+import re
+
 try:
     import __builtin__
     __builtin__.input = __builtin__.raw_input
@@ -34,6 +37,41 @@ import signal
 import time
 import numbers
 from datetime import datetime
+
+class ColorStr:
+    BLACK = '\033[0;30m'
+    RED = '\033[0;31m'
+    GREEN = '\033[0;32m'
+    YELLOW = '\033[0;33m'
+    BLUE = '\033[0;34m'
+    PURPLE = '\033[0;35m'
+    CYAN = '\033[0;36m'
+    WHITE = '\033[0;37m'
+    BRIGHT_BLACK = '\033[1;30m'
+    BRIGHT_RED = '\033[1;31m'
+    BRIGHT_GREEN = '\033[1;32m'
+    BRIGHT_YELLOW = '\033[1;33m'
+    BRIGHT_BLUE = '\033[1;34m'
+    BRIGHT_PURPLE = '\033[1;35m'
+    BRIGHT_CYAN = '\033[1;36m'
+    BRIGHT_WHITE = '\033[1;37m'
+    RESET = '\033[0m'
+
+    def __init__(self, str, color = None):
+        self._str = str
+        self._color = color
+
+    def hasColor(self):
+        return self._color is not None
+
+    def color(self):
+        return self._color
+
+    def __len__(self):
+        return len(self._str)
+
+    def ljust(self, width):
+        return self._str.ljust(width)
 
 class Console:
     """Main class for input and output. Used with "with" statement to hide pressed buttons on the console."""
@@ -157,6 +195,9 @@ class Block:
                     return '%.02f' % (value) + fix
                 value = float(value) / 1000
 
+        elif isinstance(value, ColorStr):
+            return value
+
         if value is not None:
             return str(value)
 
@@ -170,15 +211,17 @@ class Block:
                 """Do not show the column if there is not enough space for the header."""
                 break
             if index + 1 < len(line):
-                """Check the cell lenght if it is not the cell in the column. Set the column width to the cell lenght
+                """Check the cell lenght if it is not the cell in the column. Set the column width to the cell length
                 plus 2 for space if it is longer than the exisent column width."""
                 self.__columnWidths[index] = max(len(cell) + 2, self.__columnWidths[index])
 
             if bold and sys.stdout.isatty():
                 print('\x1b[1m', end='')
+            if isinstance(cell, ColorStr) and cell.hasColor() and sys.stdout.isatty():
+                print(cell.color(), end='')
             print(cell.ljust(self.__columnWidths[index])[:leftWidth], end = '')
-            if bold and sys.stdout.isatty():
-                print('\x1b[0m', end='')
+            if ((isinstance(cell, ColorStr) and cell.hasColor()) or bold) and sys.stdout.isatty():
+                print(ColorStr.RESET, end='')
             leftWidth -= self.__columnWidths[index]
 
         """Finally, the new line."""

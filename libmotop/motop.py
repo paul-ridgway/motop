@@ -67,7 +67,8 @@ def commonServers(config, arguments):
         return [Server(section, **dict(config.items(section))) for section in config.sections()]
 
     """Third use the servers on the arguments."""
-    return [Server(host, host, arguments.username, arguments.password) for host in arguments.hosts]
+    return [Server(name=host, address=host) for host in arguments.hosts]
+    # return [Server(name=host, address=host, **{arguments.username, arguments.password}) for host in arguments.hosts]
 
 def run():
     """Get the arguments and parse the config file. Activate console. Get servers from the config file

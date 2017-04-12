@@ -17,6 +17,7 @@
 
 """Imports for Python 3 compatibility"""
 from __future__ import print_function
+import time
 
 """Library imports"""
 import types
@@ -24,7 +25,8 @@ import json
 from bson import json_util
 
 """Class imports"""
-from .console import Block
+from .console import Block, ColorStr
+
 
 class StatusBlock(Block):
     columnHeaders = ('Server', 'QPS', 'Active', 'Queue', 'Flush', 'Connection', 'Network I/O', 'Memory', 'Page Faults',)
@@ -256,7 +258,20 @@ class OperationBlock(Block):
                     cells.append(server)
                     cells.append(str(op.get('opid')))
                     cells.append(op.get('client'))
-                    cells.append(op.get('op'))
+                    typeStr = op.get('op')
+                    if typeStr == "query":
+                        typeStr = ColorStr(typeStr, color = ColorStr.BRIGHT_GREEN)
+                    elif typeStr == "getmore":
+                        typeStr = ColorStr(typeStr, color = ColorStr.BRIGHT_BLUE)
+                    elif typeStr == "command":
+                        typeStr = ColorStr(typeStr, color = ColorStr.BRIGHT_CYAN)
+                    elif typeStr == "insert":
+                        typeStr = ColorStr(typeStr, color = ColorStr.BRIGHT_YELLOW)
+                    elif typeStr == "remove":
+                        typeStr = ColorStr(typeStr, color = ColorStr.BRIGHT_RED)
+                    elif typeStr == "none":
+                        typeStr = ColorStr(typeStr, color = ColorStr.BRIGHT_PURPLE)
+                    cells.append(typeStr)
                     cells.append(op.get('secs_running'))
 
                     locks = []
@@ -275,11 +290,15 @@ class OperationBlock(Block):
                     cells.append(locks)
                     cells.append(op.get('ns'))
 
+                    queryStr = "[none]"
                     if 'query' in op:
                         if '$msg' in op['query']:
-                            cells.append(op['query']['$msg'])
+                            queryStr = op['query']['$msg']
+                        elif '...' in op['query']:
+                            queryStr = ColorStr(op['query'], ColorStr.BRIGHT_RED)
                         else:
-                            cells.append(Query(**op['query']))
+                            queryStr = Query(**op['query'])
+                    cells.append(queryStr)
 
                     self.__lines.append(cells)
 
