@@ -201,7 +201,10 @@ class Query:
             self.__parts['spec'] = parts
 
     def __str__(self):
-        return json.dumps(self.__parts, default=json_util.default)
+        try:
+            return json.dumps(self.__parts, default=json_util.default)
+        except UnicodeDecodeError:
+            return self.__parts
 
     def print(self):
         """Print formatted query parts."""
