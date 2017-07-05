@@ -163,3 +163,7 @@ Motop 4.1
 Motop 4.2
 
 * Support installation with `pip`
+
+Motop 4.2.1
+
+* Better error handling for Mongo 3.2+ responses (including truncated non-objects ending with ...)
