@@ -203,6 +203,7 @@ class Block:
                 return str(value)
             except:
                 print("Unexpected error:", sys.exc_info()[0])
+                print(value.__class__.__name__)
                 print("Value:")
                 print(value)
                 raise
