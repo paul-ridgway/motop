@@ -23,6 +23,7 @@ import time
 import types
 import json
 from bson import json_util
+import sys
 
 """Class imports"""
 from .console import Block, ColorStr
@@ -295,12 +296,20 @@ class OperationBlock(Block):
 
                     queryStr = "[none]"
                     if 'query' in op:
-                        if '$msg' in op['query']:
-                            queryStr = op['query']['$msg']
-                        elif '...' in op['query']:
-                            queryStr = ColorStr(op['query'], ColorStr.BRIGHT_RED)
-                        else:
-                            queryStr = Query(**op['query'])
+                        try:
+                            if '$msg' in op['query']:
+                                queryStr = op['query']['$msg']
+                            elif '...' in op['query']:
+                                queryStr = ColorStr(op['query'], ColorStr.BRIGHT_RED)
+                            else:
+                                queryStr = Query(**op['query'])
+                        except:
+                            print("Unexpected error:", sys.exc_info()[0])
+                            print("Op:")
+                            print(op)
+                            print("Query:")
+                            print(op['query'])
+                            raise
                     cells.append(queryStr)
 
                     self.__lines.append(cells)
