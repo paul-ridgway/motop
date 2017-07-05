@@ -205,7 +205,7 @@ class Query:
         try:
             return json.dumps(self.__parts, default=json_util.default)
         except UnicodeDecodeError:
-            return self.__parts.__str__
+            return str(self.__parts)
 
     def print(self):
         """Print formatted query parts."""
