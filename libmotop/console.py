@@ -199,7 +199,13 @@ class Block:
             return value
 
         if value is not None:
-            return str(value)
+            try:
+                return str(value)
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                print("Value:")
+                print(value)
+                raise
 
         return ''
 
